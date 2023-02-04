@@ -3,7 +3,7 @@ import { DBService } from 'src/DB/DB.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { UpdatePasswordDto } from './dto/update-user.dto';
-import { UserEntity } from 'src/DB/UserEntity';
+import { UserEntity } from 'src/users/UserEntity';
 
 @Injectable()
 export class UsersService {
@@ -75,7 +75,7 @@ export class UsersService {
     const index = this.db.users.findIndex((user) => user.id === id);
 
     if (index === -1) {
-      throw new HttpException('User is not founded', HttpStatus.NOT_FOUND);
+      throw new HttpException('User is not found', HttpStatus.NOT_FOUND);
     }
 
     this.db.users.splice(index, 1);

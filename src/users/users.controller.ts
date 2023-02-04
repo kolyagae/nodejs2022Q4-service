@@ -14,7 +14,7 @@ import {
   Body,
   UseInterceptors,
 } from '@nestjs/common/decorators';
-import { UserEntity } from 'src/DB/UserEntity';
+import { UserEntity } from 'src/users/UserEntity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
