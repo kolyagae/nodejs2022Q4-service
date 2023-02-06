@@ -27,7 +27,7 @@ export class FavoritesService {
     return response;
   }
 
-  addTrack(id: string): string {
+  addTrack(id: string): Record<string, string> {
     const track = this.db.tracks.find((track) => track.id === id);
 
     if (!track) {
@@ -39,7 +39,7 @@ export class FavoritesService {
 
     this.db.favorites.tracks.push(id);
 
-    return 'Track added to favorites';
+    return { message: 'Track added to favorites' };
   }
 
   removeTrack(id: string): void {
@@ -52,7 +52,7 @@ export class FavoritesService {
     this.db.favorites.tracks.splice(index, 1);
   }
 
-  addAlbum(id: string): string {
+  addAlbum(id: string): Record<string, string> {
     const album = this.db.albums.find((album) => album.id === id);
 
     if (!album) {
@@ -64,7 +64,7 @@ export class FavoritesService {
 
     this.db.favorites.albums.push(id);
 
-    return 'Album added to favorites';
+    return { message: 'Album added to favorites' };
   }
 
   removeAlbum(id: string): void {
@@ -77,7 +77,7 @@ export class FavoritesService {
     this.db.favorites.albums.splice(index, 1);
   }
 
-  addArtist(id: string): string {
+  addArtist(id: string): Record<string, string> {
     const artist = this.db.artists.find((artist) => artist.id === id);
 
     if (!artist) {
@@ -89,7 +89,7 @@ export class FavoritesService {
 
     this.db.favorites.artists.push(id);
 
-    return 'Artist added to favorites';
+    return { message: 'Artist added to favorites' };
   }
 
   removeArtist(id: string): void {
