@@ -1,6 +1,6 @@
 import { Album } from 'src/albums/album.model';
 import { Artist } from 'src/artists/artist.model';
-import { Track } from 'src/tracks/tracks.interface';
+import { Track } from 'src/tracks/tracks.model';
 
 export interface IFavorites {
   artists: string[];

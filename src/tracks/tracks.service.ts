@@ -3,7 +3,7 @@ import { DBService } from 'src/DB/DB.service';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { Track } from './tracks.interface';
+import { Track } from './tracks.model';
 
 @Injectable()
 export class TracksService {
@@ -27,13 +27,13 @@ export class TracksService {
     const uuid = uuidv4();
     const { name, artistId = null, albumId = null, duration } = createTrackDto;
 
-    const newTrack = {
+    const newTrack = new Track({
       id: uuid,
       name,
       artistId,
       albumId,
       duration,
-    };
+    });
 
     this.db.tracks.push(newTrack);
 
@@ -49,10 +49,10 @@ export class TracksService {
 
     const track = this.db.tracks[index];
 
-    const updatedTrack = {
+    const updatedTrack = new Track({
       ...track,
       ...updateTrackDto,
-    };
+    });
 
     this.db.tracks.splice(index, 1, updatedTrack);
 

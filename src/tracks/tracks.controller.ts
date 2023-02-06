@@ -12,7 +12,7 @@ import {
 import { Put } from '@nestjs/common/decorators';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { Track } from './tracks.interface';
+import { Track } from './tracks.model';
 import { TracksService } from './tracks.service';
 
 @Controller('track')
