@@ -71,6 +71,14 @@ export class AlbumsService {
       }
     });
 
+    const indexFavAlbum = this.db.favorites.albums.findIndex(
+      (albumId) => albumId === id,
+    );
+
+    if (indexFavAlbum !== -1) {
+      this.db.favorites.albums.splice(indexFavAlbum, 1);
+    }
+
     this.db.albums.splice(index, 1);
   }
 }

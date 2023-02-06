@@ -66,6 +66,14 @@ export class TracksService {
       throw new HttpException('Track is not found', HttpStatus.NOT_FOUND);
     }
 
+    const indexFavTrack = this.db.favorites.artists.findIndex(
+      (trackId) => trackId === id,
+    );
+
+    if (indexFavTrack !== -1) {
+      this.db.favorites.tracks.splice(indexFavTrack, 1);
+    }
+
     this.db.tracks.splice(index, 1);
   }
 }

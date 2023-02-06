@@ -70,6 +70,14 @@ export class ArtistsService {
       }
     });
 
+    const indexFavArtist = this.db.favorites.artists.findIndex(
+      (artistId) => artistId === id,
+    );
+
+    if (indexFavArtist !== -1) {
+      this.db.favorites.artists.splice(indexFavArtist, 1);
+    }
+
     this.db.artists.splice(index, 1);
   }
 }

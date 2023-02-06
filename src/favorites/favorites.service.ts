@@ -8,11 +8,11 @@ export class FavoritesService {
   constructor(private db: DBService) {}
 
   getAll(): FavoritesResponse {
-    const tracks = this.db.tracks.filter((artist) =>
-      this.db.favorites.tracks.includes(artist.id),
+    const tracks = this.db.tracks.filter((track) =>
+      this.db.favorites.tracks.includes(track.id),
     );
-    const albums = this.db.albums.filter((artist) =>
-      this.db.favorites.albums.includes(artist.id),
+    const albums = this.db.albums.filter((album) =>
+      this.db.favorites.albums.includes(album.id),
     );
     const artists = this.db.artists.filter((artist) =>
       this.db.favorites.artists.includes(artist.id),
