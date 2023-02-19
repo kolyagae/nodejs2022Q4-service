@@ -11,7 +11,7 @@ import {
   Put,
   Header,
 } from '@nestjs/common';
-import { Artist } from './artist.model';
+import { ArtistEntity } from './artist.entity';
 import { ArtistsService } from './artists.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
@@ -27,13 +27,13 @@ export class ArtistsController {
 
   @Get(':id')
   @Header('content-type', 'application/json')
-  findOne(@Param('id', ParseUUIDPipe) id: string): Artist {
+  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<ArtistEntity> {
     return this.artistsService.getOne(id);
   }
 
   @Post()
   @Header('content-type', 'application/json')
-  create(@Body() createArtistDto: CreateArtistDto) {
+  create(@Body() createArtistDto: CreateArtistDto): Promise<ArtistEntity> {
     return this.artistsService.create(createArtistDto);
   }
 
@@ -42,7 +42,7 @@ export class ArtistsController {
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateArtistDto: UpdateArtistDto,
-  ) {
+  ): Promise<ArtistEntity> {
     return this.artistsService.update(id, updateArtistDto);
   }
 
