@@ -15,8 +15,8 @@ import {
   UseInterceptors,
   Header,
 } from '@nestjs/common/decorators';
-import { UserEntity } from 'src/users/user.model';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UserEntity } from './user.entity';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
@@ -32,14 +32,14 @@ export class UsersController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   @Header('content-type', 'application/json')
-  findOne(@Param('id', ParseUUIDPipe) id: string): UserEntity {
+  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<UserEntity> {
     return this.usersService.getOne(id);
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   @Header('content-type', 'application/json')
-  create(@Body() createUserDto: CreateUserDto) {
+  create(@Body() createUserDto: CreateUserDto): Promise<UserEntity> {
     return this.usersService.create(createUserDto);
   }
 
@@ -56,7 +56,7 @@ export class UsersController {
   @Delete(':id')
   @Header('content-type', 'application/json')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', ParseUUIDPipe) id: string) {
+  remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.usersService.remove(id);
   }
 }
