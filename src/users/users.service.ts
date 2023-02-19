@@ -21,13 +21,13 @@ export class UsersService {
   }
 
   async getOne(id: string): Promise<UserEntity> {
-    const user = await this.users.findOneBy({ id });
+    try {
+      const user = await this.users.findOneByOrFail({ id });
 
-    if (!user) {
+      return user;
+    } catch {
       throw new HttpException('User is not found', HttpStatus.NOT_FOUND);
     }
-
-    return user;
   }
 
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
@@ -75,7 +75,7 @@ export class UsersService {
       updatedAt: newTimestamp,
     });
 
-    this.users.update(id, updatedUser);
+    await this.users.update(id, updatedUser);
 
     return updatedUser;
   }
