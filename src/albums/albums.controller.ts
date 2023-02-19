@@ -11,7 +11,7 @@ import {
   Put,
   Header,
 } from '@nestjs/common';
-import { Album } from './album.model';
+import { AlbumEntity } from './album.entity';
 import { AlbumsService } from './albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
@@ -27,7 +27,7 @@ export class AlbumsController {
 
   @Get(':id')
   @Header('content-type', 'application/json')
-  findOne(@Param('id', ParseUUIDPipe) id: string): Album {
+  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<AlbumEntity> {
     return this.albumsService.getOne(id);
   }
 
