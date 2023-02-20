@@ -1,7 +1,7 @@
 services:
   database:
     container_name: Postgres
-    # image: kolyagae/home-library-service-db
+    image: kolyagae/home-library-service-db
     build: ${DB_PATH}
     restart: always
     ports:
@@ -16,7 +16,7 @@ services:
       - POSTGRES_DB=${TYPEORM_DATABASE}
   app:
     container_name: App
-    # image: kolyagae/home-library-service
+    image: kolyagae/home-library-service
     build: .
     ports:
       - ${PORT}:${PORT}
