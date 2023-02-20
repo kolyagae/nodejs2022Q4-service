@@ -30,14 +30,7 @@ export class FavoritesService {
     });
 
     if (!favorites) {
-      await this.favorites.save(
-        // this.favorites.create({
-        //   artists: [],
-        //   albums: [],
-        //   tracks: [],
-        // }),
-        new FavoritesEntity(),
-      );
+      await this.favorites.save(new FavoritesEntity());
 
       return this.getAll();
     }

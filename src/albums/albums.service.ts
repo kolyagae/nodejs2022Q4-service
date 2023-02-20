@@ -31,8 +31,6 @@ export class AlbumsService {
 
   async create(createAlbumDto: CreateAlbumDto): Promise<AlbumEntity> {
     const uuid = uuidv4();
-    // const { name, year, artistId } = createAlbumDto;
-
     const newAlbum = this.albums.create({
       id: uuid,
       ...createAlbumDto,
@@ -70,21 +68,5 @@ export class AlbumsService {
     } catch {
       throw new HttpException('Album is not found', HttpStatus.NOT_FOUND);
     }
-
-    //   this.tracks.forEach((track) => {
-    //     if (track.albumId === id) {
-    //       track.albumId = null;
-    //     }
-    //   });
-
-    //   const indexFavAlbum = this.favorites.albums.findIndex(
-    //     (albumId) => albumId === id,
-    //   );
-
-    //   if (indexFavAlbum !== -1) {
-    //     this.favorites.albums.splice(indexFavAlbum, 1);
-    //   }
-
-    //   this.albums.splice(index, 1);
   }
 }

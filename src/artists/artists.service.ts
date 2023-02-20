@@ -31,8 +31,6 @@ export class ArtistsService {
 
   async create(createArtistDto: CreateArtistDto): Promise<ArtistEntity> {
     const uuid = uuidv4();
-    // const { name, grammy } = createArtistDto;
-
     const newArtist = this.artists.create({
       id: uuid,
       ...createArtistDto,
@@ -70,21 +68,5 @@ export class ArtistsService {
     } catch {
       throw new HttpException('Artist is not found', HttpStatus.NOT_FOUND);
     }
-
-    // this.tracks.forEach((track) => {
-    //   if (track.artistId === id) {
-    //     track.artistId = null;
-    //   }
-    // });
-
-    // const indexFavArtist = this.favorites.artists.findIndex(
-    //   (artistId) => artistId === id,
-    // );
-
-    // if (indexFavArtist !== -1) {
-    //   this.favorites.artists.splice(indexFavArtist, 1);
-    // }
-
-    // this.artists.splice(index, 1);
   }
 }
