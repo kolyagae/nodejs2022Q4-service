@@ -29,12 +29,10 @@ export class TracksService {
 
   async create(createTrackDto: CreateTrackDto): Promise<TrackEntity> {
     const uuid = uuidv4();
-    const { name, duration } = createTrackDto;
 
     const newTrack = this.tracks.create({
       id: uuid,
-      name,
-      duration,
+      ...createTrackDto,
     });
 
     await this.tracks.save(newTrack);

@@ -21,7 +21,7 @@ export class AlbumsService {
 
   async getOne(id: string): Promise<AlbumEntity> {
     try {
-      const album = this.albums.findOneByOrFail({ id });
+      const album = await this.albums.findOneByOrFail({ id });
 
       return album;
     } catch {
