@@ -13,7 +13,7 @@ import {
 import { Put } from '@nestjs/common/decorators';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { Track } from './tracks.model';
+import { TrackEntity } from './track.entity';
 import { TracksService } from './tracks.service';
 
 @Controller('track')
@@ -21,19 +21,19 @@ export class TracksController {
   constructor(private readonly tracksService: TracksService) {}
   @Get()
   @Header('content-type', 'application/json')
-  findAll() {
+  findAll(): Promise<TrackEntity[]> {
     return this.tracksService.getAll();
   }
 
   @Get(':id')
   @Header('content-type', 'application/json')
-  findOne(@Param('id', ParseUUIDPipe) id: string): Track {
+  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<TrackEntity> {
     return this.tracksService.getOne(id);
   }
 
   @Post()
   @Header('content-type', 'application/json')
-  create(@Body() createTrackDto: CreateTrackDto) {
+  create(@Body() createTrackDto: CreateTrackDto): Promise<TrackEntity> {
     return this.tracksService.create(createTrackDto);
   }
 
@@ -42,7 +42,7 @@ export class TracksController {
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateTrackDto: UpdateTrackDto,
-  ) {
+  ): Promise<TrackEntity> {
     return this.tracksService.update(id, updateTrackDto);
   }
 

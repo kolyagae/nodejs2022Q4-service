@@ -1,35 +1,42 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { DBService } from 'src/DB/DB.service';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { UpdatePasswordDto } from './dto/update-user.dto';
-import { UserEntity } from 'src/users/user.model';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from './user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-  constructor(private db: DBService) {}
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly users: Repository<UserEntity>,
+  ) {}
 
-  getAll(): UserEntity[] {
-    return this.db.users;
+  async getAll(): Promise<UserEntity[]> {
+    const users = await this.users.find();
+
+    return users;
   }
 
-  getOne(id: string): UserEntity {
-    const user = this.db.users.find((user) => user.id === id);
+  async getOne(id: string): Promise<UserEntity> {
+    try {
+      const user = await this.users.findOneByOrFail({ id });
 
-    if (!user) {
-      throw new HttpException('User is not founded', HttpStatus.NOT_FOUND);
+      return user;
+    } catch {
+      throw new HttpException('User is not found', HttpStatus.NOT_FOUND);
     }
-
-    return new UserEntity(user);
   }
 
-  create(createUserDto: CreateUserDto): UserEntity {
+  async create(createUserDto: CreateUserDto): Promise<UserEntity> {
     const uuid = uuidv4();
     const startVersion = 1;
     const creationTimestamp = Date.now();
     const lastUpdateTimestamp = creationTimestamp;
 
-    const newUser = new UserEntity({
+    const newUser = this.users.create({
       id: uuid,
       ...createUserDto,
       version: startVersion,
@@ -37,19 +44,21 @@ export class UsersService {
       updatedAt: lastUpdateTimestamp,
     });
 
-    this.db.users.push(newUser);
+    await this.users.save(newUser);
 
     return newUser;
   }
 
-  update(id: string, updatePasswordDto: UpdatePasswordDto): UserEntity {
-    const index = this.db.users.findIndex((user) => user.id === id);
+  async update(
+    id: string,
+    updatePasswordDto: UpdatePasswordDto,
+  ): Promise<UserEntity> {
+    const user = await this.users.findOneBy({ id });
 
-    if (index === -1) {
+    if (!user) {
       throw new HttpException('User is not found', HttpStatus.NOT_FOUND);
     }
 
-    const user = this.db.users[index];
     const newTimestamp = Date.now();
     const { oldPassword, newPassword } = updatePasswordDto;
     const { version, password } = user;
@@ -59,25 +68,24 @@ export class UsersService {
       throw new HttpException('Old password is wrong', HttpStatus.FORBIDDEN);
     }
 
-    const updatedUser = new UserEntity({
+    const updatedUser = this.users.create({
       ...user,
       version: newVersion,
       password: newPassword,
       updatedAt: newTimestamp,
     });
 
-    this.db.users.splice(index, 1, updatedUser);
+    await this.users.update(id, updatedUser);
 
     return updatedUser;
   }
 
-  remove(id: string): void {
-    const index = this.db.users.findIndex((user) => user.id === id);
-
-    if (index === -1) {
+  async remove(id: string): Promise<void> {
+    try {
+      await this.users.findOneByOrFail({ id });
+      await this.users.delete({ id });
+    } catch {
       throw new HttpException('User is not found', HttpStatus.NOT_FOUND);
     }
-
-    this.db.users.splice(index, 1);
   }
 }

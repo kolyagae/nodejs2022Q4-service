@@ -9,19 +9,31 @@ git clone https://github.com/kolyagae/nodejs2022Q4-service.git
 ## Switch to development branch
 
 ```
-git checkout develop
+git checkout home-library-service-part-2
 ```
 
 ## Installing NPM modules
 
 ```
-npm install
+npm install --legacy-peer-deps
 ```
 
 ## Running application
 
 ```
 npm run start
+```
+
+## Running application in docker
+
+```
+npm run docker:start
+```
+
+## Running vulnerabilities scanning
+
+```
+npm run docker:scan
 ```
 
 After running the application on port (default 4000) you can open

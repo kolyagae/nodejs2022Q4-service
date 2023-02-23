@@ -1,84 +1,72 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { DBService } from 'src/DB/DB.service';
-import { Album } from './album.model';
+import { AlbumEntity } from './album.entity';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AlbumsService {
-  constructor(private db: DBService) {}
+  constructor(
+    @InjectRepository(AlbumEntity)
+    private readonly albums: Repository<AlbumEntity>,
+  ) {}
 
-  getAll(): Album[] {
-    return this.db.albums;
+  async getAll(): Promise<AlbumEntity[]> {
+    const albums = await this.albums.find();
+
+    return albums;
   }
 
-  getOne(id: string): Album {
-    const artist = this.db.albums.find((artist) => artist.id === id);
+  async getOne(id: string): Promise<AlbumEntity> {
+    try {
+      const album = await this.albums.findOneByOrFail({ id });
 
-    if (!artist) {
+      return album;
+    } catch {
       throw new HttpException('Artist is not found', HttpStatus.NOT_FOUND);
     }
-
-    return artist;
   }
 
-  create(createAlbumDto: CreateAlbumDto): Album {
+  async create(createAlbumDto: CreateAlbumDto): Promise<AlbumEntity> {
     const uuid = uuidv4();
-    const { name, year, artistId } = createAlbumDto;
-
-    const newAlbum = new Album({
+    const newAlbum = this.albums.create({
       id: uuid,
-      name,
-      year,
-      artistId,
+      ...createAlbumDto,
     });
 
-    this.db.albums.push(newAlbum);
+    await this.albums.save(newAlbum);
 
     return newAlbum;
   }
 
-  update(id: string, updateAlbumDto: UpdateAlbumDto): Album {
-    const index = this.db.albums.findIndex((album) => album.id === id);
+  async update(
+    id: string,
+    updateAlbumDto: UpdateAlbumDto,
+  ): Promise<AlbumEntity> {
+    const album = await this.albums.findOneBy({ id });
 
-    if (index === -1) {
+    if (!album) {
       throw new HttpException('Album is not found', HttpStatus.NOT_FOUND);
     }
 
-    const artist = this.db.albums[index];
-
-    const updatedArtist = new Album({
-      ...artist,
+    const updatedArtist = this.albums.create({
+      ...album,
       ...updateAlbumDto,
     });
 
-    this.db.albums.splice(index, 1, updatedArtist);
+    await this.albums.update(id, updatedArtist);
 
     return updatedArtist;
   }
 
-  remove(id: string): void {
-    const index = this.db.albums.findIndex((album) => album.id === id);
-
-    if (index === -1) {
+  async remove(id: string): Promise<void> {
+    try {
+      await this.albums.findOneByOrFail({ id });
+      await this.albums.delete(id);
+    } catch {
       throw new HttpException('Album is not found', HttpStatus.NOT_FOUND);
     }
-
-    this.db.tracks.forEach((track) => {
-      if (track.albumId === id) {
-        track.albumId = null;
-      }
-    });
-
-    const indexFavAlbum = this.db.favorites.albums.findIndex(
-      (albumId) => albumId === id,
-    );
-
-    if (indexFavAlbum !== -1) {
-      this.db.favorites.albums.splice(indexFavAlbum, 1);
-    }
-
-    this.db.albums.splice(index, 1);
   }
 }

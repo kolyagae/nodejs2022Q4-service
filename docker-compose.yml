@@ -1,0 +1,33 @@
+services:
+  database:
+    container_name: Postgres
+    image: kolyagae/home-library-service-db
+    build: ${DB_PATH}
+    restart: always
+    ports:
+      - ${TYPEORM_PORT}:${TYPEORM_PORT}
+    volumes:
+      - ${DB_PATH}${DB_VOLUMES}:${PGDATA} ${PERMISSION_NUMBER}
+    networks:
+      - myNetwork
+    environment:
+      - POSTGRES_PASSWORD=${TYPEORM_PASSWORD}
+      - POSTGRES_USER=${TYPEORM_USERNAME}
+      - POSTGRES_DB=${TYPEORM_DATABASE}
+  app:
+    container_name: App
+    image: kolyagae/home-library-service
+    build: .
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      - database
+    networks:
+      - myNetwork
+    volumes:
+      - ${APP_VOLUMES}:${WORK_DIR_SRC}
+    restart: always
+    command: ['npm', 'run', 'start:dev']
+networks:
+  myNetwork:
+    driver: bridge
