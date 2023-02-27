@@ -7,6 +7,8 @@ import { FavoritesModule } from './favorites/favorites.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerMiddleware } from './middleware/logger.middleware';
+import { APP_FILTER } from '@nestjs/core';
+import { AllExceptionsFilter } from './logging/all-exceptions.filter';
 
 @Module({
   imports: [
@@ -33,11 +35,15 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
     }),
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }
-// export class AppModule {}
