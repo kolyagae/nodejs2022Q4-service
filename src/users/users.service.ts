@@ -6,6 +6,7 @@ import { UpdatePasswordDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -30,15 +31,30 @@ export class UsersService {
     }
   }
 
+  async getOneByLogin(login: string): Promise<UserEntity> {
+    try {
+      const user = await this.users.findOneByOrFail({ login });
+
+      return user;
+    } catch {
+      throw new HttpException('Wrong login or password', HttpStatus.FORBIDDEN);
+    }
+  }
+
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
     const uuid = uuidv4();
     const startVersion = 1;
     const creationTimestamp = Date.now();
     const lastUpdateTimestamp = creationTimestamp;
+    const passwordHash = await bcrypt.hash(
+      createUserDto.password,
+      Number.parseInt(process.env.CRYPT_SALT),
+    );
 
     const newUser = this.users.create({
       id: uuid,
-      ...createUserDto,
+      login: createUserDto.login,
+      password: passwordHash,
       version: startVersion,
       createdAt: creationTimestamp,
       updatedAt: lastUpdateTimestamp,
@@ -64,14 +80,21 @@ export class UsersService {
     const { version, password } = user;
     const newVersion = version + 1;
 
-    if (oldPassword !== password) {
+    const isMatch = await bcrypt.compare(oldPassword, password);
+
+    if (!isMatch) {
       throw new HttpException('Old password is wrong', HttpStatus.FORBIDDEN);
     }
+
+    const newPasswordHash = await bcrypt.hash(
+      newPassword,
+      Number.parseInt(process.env.CRYPT_SALT),
+    );
 
     const updatedUser = this.users.create({
       ...user,
       version: newVersion,
-      password: newPassword,
+      password: newPasswordHash,
       updatedAt: newTimestamp,
     });
 
